@@ -1,336 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Reel Life - Fishing Blog</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-        .nav-link {
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #1e40af;
-        }
-        .hero {
-            background-image: url('https://via.placeholder.com/1200x400?text=Fishing+Lake+Sunset');
-            background-size: cover;
-            background-position: center;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FishTales - Fishing Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/react-router-dom@6.4.3/umd/react-router-dom.min.js"></script>
 </head>
-<body class="bg-gray-100">
-    <!-- Navigation -->
-    <nav class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">The Reel Life</h1>
-            <div class="space-x-4">
-                <a href="#home" class="nav-link" onclick="loadPage('home')">Home</a>
-                <a href="#posts" class="nav-link" onclick="loadPage('posts')">Posts</a>
-                <a href="#about" class="nav-link" onclick="loadPage('about')">About</a>
-                <a href="#gallery" class="nav-link" onclick="loadPage('gallery')">Gallery</a>
-                <a href="#editor" class="nav-link" onclick="loadPage('editor')">Editor</a>
-            </div>
+<body class="bg-gray-100 font-sans">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { BrowserRouter, Routes, Route, Link, useNavigate } = ReactRouterDOM;
+
+    // Home Page
+    const Home = () => (
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-blue-600 mb-4">Welcome to FishTales</h1>
+        <p class="text-lg mb-4">Your go-to blog for fishing tips, stories, and gear reviews.</p>
+        <img src="https://via.placeholder.com/800x400?text=Fishing+Scene" alt="Fishing Scene" class="w-full h-64 object-cover rounded-lg mb-4" />
+        <p class="text-gray-700">Explore our blog for the latest fishing adventures!</p>
+      </div>
+    );
+
+    // Blog Page
+    const Blog = () => {
+      const [posts, setPosts] = useState([]);
+      useEffect(() => {
+        fetch('http://localhost:3000/api/posts')
+          .then(res => res.json())
+          .then(data => setPosts(data))
+          .catch(err => console.error(err));
+      }, []);
+      return (
+        <div class="container mx-auto px-4 py-8">
+          <h1 class="text-3xl font-bold text-blue-600 mb-4">Blog Posts</h1>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {posts.map(post => (
+              <div key={post._id} class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold">{post.title} {post.starred && <span class="text-yellow-500">★</span>}</h2>
+                <p class="text-gray-600">{post.content.substring(0, 100)}...</p>
+                <Link to={`/blog/${post._id}`} class="text-blue-500 hover:underline">Read More</Link>
+              </div>
+            ))}
+          </div>
         </div>
-    </nav>
+      );
+    };
 
-    <!-- Main Content -->
-    <div id="content" class="container mx-auto p-6"></div>
+    // About Page
+    const About = () => (
+      <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-blue-600 mb-4">About FishTales</h1>
+        <p class="text-gray-700">FishTales is dedicated to fishing enthusiasts, sharing tips, tricks, and tales from the water.</p>
+      </div>
+    );
 
-    <!-- Footer -->
-    <footer class="bg-blue-600 text-white p-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>© 2025 The Reel Life. All rights reserved.</p>
+    // Contact Page with Subscription Form
+    const Contact = () => {
+      const [email, setEmail] = useState('');
+      const [message, setMessage] = useState('');
+      const handleSubscribe = (e) => {
+        e.preventDefault();
+        fetch('http://localhost:3000/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            setMessage(data.message);
+            setEmail('');
+          })
+          .catch(err => setMessage('Error subscribing. Try again.'));
+      };
+      return (
+        <div class="container mx-auto px-4 py-8">
+          <h1 class="text-3xl font-bold text-blue-600 mb-4">Contact & Subscribe</h1>
+          <p class="text-gray-700 mb-4">Join our newsletter for the latest fishing updates!</p>
+          <form onSubmit={handleSubscribe} class="mb-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              class="border p-2 rounded w-full md:w-1/3"
+              required
+            />
+            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Subscribe</button>
+          </form>
+          {message && <p class="text-green-600">{message}</p>}
         </div>
-    </footer>
+      );
+    };
 
-    <script>
-        // Sample posts data
-        let posts = JSON.parse(localStorage.getItem('posts')) || [
-            {
-                id: 1,
-                title: "My Biggest Catch Yet!",
-                content: "Last weekend, I landed a 20-pound bass at Lake Serenity. The fight was intense, and the sunset view made it unforgettable. Here's how I did it...",
-                date: "2025-05-20"
-            },
-            {
-                id: 2,
-                title: "Best Baits for Spring Fishing",
-                content: "Spring is here, and the fish are biting! My go-to baits this season include soft plastics and crankbaits. Let me share my top picks...",
-                date: "2025-05-15"
-            }
-        ];
+    // Editor's Tab
+    const Editor = () => {
+      const [password, setPassword] = useState('');
+      const [isAuthenticated, setIsAuthenticated] = useState(false);
+      const [title, setTitle] = useState('');
+      const [content, setContent] = useState('');
+      const [posts, setPosts] = useState([]);
+      const [newsletterSubject, setNewsletterSubject] = useState('');
+      const [newsletterContent, setNewsletterContent] = useState('');
+      const [message, setMessage] = useState('');
 
-        // Sample gallery images (placeholders)
-        const galleryImages = [
-            'https://via.placeholder.com/600x400?text=Fish+1',
-            'https://via.placeholder.com/600x400?text=Fish+2',
-            'https://via.placeholder.com/600x400?text=Fish+3'
-        ];
-
-        // Mock email sending function
-        function sendEmail(email) {
-            return new Promise((resolve) => {
-                // Simulating API call (replace with real email service in production)
-                setTimeout(() => {
-                    console.log(`Email sent to ${email}`);
-                    resolve({ status: 'success', message: 'Subscribed successfully!' });
-                }, 1000);
-            });
-        }
-
-        // Sort posts
-        function sortPosts(order) {
-            return [...posts].sort((a, b) => {
-                return order === 'newest'
-                    ? new Date(b.date) - new Date(a.date)
-                    : new Date(a.date) - new Date(b.date);
-            });
-        }
-
-        // Delete post
-        function deletePost(id) {
-            if (confirm("Are you sure you want to delete this post?")) {
-                posts = posts.filter(post => post.id !== id);
-                localStorage.setItem('posts', JSON.stringify(posts));
-                loadPage('posts');
-            }
-        }
-
-        // Page rendering
-        function loadPage(page, postId = null) {
-            const content = document.getElementById('content');
-            let sortOrder = localStorage.getItem('sortOrder') || 'newest';
-
-            switch(page) {
-                case 'home':
-                    content.innerHTML = `
-                        <div class="space-y-12">
-                            <!-- Hero Section -->
-                            <div class="hero">
-                                <div>
-                                    <h2 class="text-4xl font-bold mb-4">The Reel Life: Your Fishing Adventure Starts Here</h2>
-                                    <p class="text-lg">Discover epic fishing stories, expert tips, and stunning photos from the water.</p>
-                                </div>
-                            </div>
-
-                            <!-- Introduction -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Welcome to The Reel Life</h2>
-                                <p class="text-lg mb-4">Hey there, anglers! I'm thrilled to share my passion for fishing through The Reel Life. Whether you're casting in a quiet lake or battling waves in the open sea, this blog is your go-to for inspiration and practical advice. From my first catch as a kid to landing trophy fish today, I've learned a thing or two about what makes fishing so special. Join me as we explore the best spots, gear, and techniques!</p>
-                                <p class="text-lg">Scroll down to check out a featured post, some quick tips, and a way to stay updated with our newsletter.</p>
-                            </div>
-
-                            <!-- Featured Post -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Featured Post</h2>
-                                <div class="bg-gray-50 p-4 rounded-lg shadow">
-                                    <h3 class="text-xl font-semibold text-blue-600">${posts[0].title}</h3>
-                                    <p class="text-gray-500 text-sm">${posts[0].date}</p>
-                                    <p class="text-gray-600 mb-4">${posts[0].content.substring(0, 100)}...</p>
-                                    <a href="#post/${posts[0].id}" onclick="loadPage('post', ${posts[0].id})" class="text-blue-500 hover:underline">See more</a>
-                                </div>
-                            </div>
-
-                            <!-- Fishing Tips -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Quick Fishing Tips</h2>
-                                <div class="grid gap-4 md:grid-cols-3">
-                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
-                                        <h3 class="text-lg font-semibold text-blue-600">Choose the Right Bait</h3>
-                                        <p class="text-gray-600">Match your bait to the season. In spring, try soft plastics for bass; in fall, go for live bait like worms.</p>
-                                    </div>
-                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
-                                        <h3 class="text-lg font-semibold text-blue-600">Check the Weather</h3>
-                                        <p class="text-gray-600">Fish are more active before a storm. Plan your trip when the barometric pressure is dropping!</p>
-                                    </div>
-                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
-                                        <h3 class="text-lg font-semibold text-blue-600">Early Bird Catches the Fish</h3>
-                                        <p class="text-gray-600">Dawn and dusk are prime fishing times. Get out early or stay late for the best bites.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Newsletter Signup -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Join Our Newsletter</h2>
-                                <p class="text-lg mb-4">Stay in the loop with the latest fishing stories, tips, and updates from The Reel Life!</p>
-                                <form id="newsletter-form" class="flex justify-center">
-                                    <input type="email" id="email-input" placeholder="Enter your email" class="p-2 border rounded-l w-1/2" required>
-                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700">Subscribe</button>
-                                </form>
-                                <p id="email-status" class="text-sm text-gray-500 mt-2"></p>
-                            </div>
-                        </div>
-                    `;
-                    // Add newsletter form event listener
-                    document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
-                        e.preventDefault();
-                        const email = document.getElementById('email-input').value;
-                        const status = document.getElementById('email-status');
-                        status.textContent = 'Subscribing...';
-                        try {
-                            const response = await sendEmail(email);
-                            status.textContent = response.message;
-                            status.classList.add('text-green-600');
-                        } catch (error) {
-                            status.textContent = 'Error subscribing. Please try again.';
-                            status.classList.add('text-red-600');
-                        }
-                    });
-                    break;
-                case 'posts':
-                    content.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-3xl font-bold text-blue-600">Blog Posts</h2>
-                                <button id="sort-button" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                                    Sort: ${sortOrder === 'newest' ? 'Newest First' : 'Oldest First'}
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                ${sortPosts(sortOrder).map(post => `
-                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
-                                        <h3 class="text-xl font-semibold text-blue-600">${post.title}</h3>
-                                        <p class="text-gray-500 text-sm">${post.date}</p>
-                                        <p class="text-gray-600">${post.content.substring(0, 100)}...</p>
-                                        <div class="flex space-x-4 mt-2">
-                                            <a href="#post/${post.id}" onclick="loadPage('post', ${post.id})" class="text-blue-500 hover:underline">See more</a>
-                                            <button onclick="deletePost(${post.id})" class="text-red-500 hover:underline">Delete</button>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                    // Add sort button event listener
-                    document.getElementById('sort-button').addEventListener('click', () => {
-                        sortOrder = sortOrder === 'newest' ? 'oldest' : 'newest';
-                        localStorage.setItem('sortOrder', sortOrder);
-                        loadPage('posts');
-                    });
-                    break;
-                case 'post':
-                    const post = posts.find(p => p.id === postId);
-                    if (post) {
-                        content.innerHTML = `
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">${post.title}</h2>
-                                <p class="text-gray-500 text-sm mb-4">${post.date}</p>
-                                <p class="text-gray-600 mb-4">${post.content}</p>
-                                <div class="flex space-x-4">
-                                    <a href="#posts" onclick="loadPage('posts')" class="text-blue-500 hover:underline">Back to Posts</a>
-                                    <button onclick="deletePost(${post.id})" class="text-red-500 hover:underline">Delete</button>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        content.innerHTML = `
-                            <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                                <h2 class="text-3xl font-bold mb-4 text-red-600">Post Not Found</h2>
-                                <p class="text-lg">The post you're looking for doesn't exist.</p>
-                                <a href="#posts" onclick="loadPage('posts')" class="text-blue-500 hover:underline">Back to Posts</a>
-                            </div>
-                        `;
-                    }
-                    break;
-                case 'about':
-                    content.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h2 class="text-3xl font-bold mb-4 text-blue-600">About The Reel Life</h2>
-                            <p class="text-lg mb-4">I'm an avid angler with a passion for sharing my fishing experiences. Whether it's freshwater or saltwater, I love exploring new spots and techniques. The Reel Life is my way of connecting with fellow fishing enthusiasts.</p>
-                            <p class="text-lg">Follow along for tips, gear reviews, and stories from the water!</p>
-                        </div>
-                    `;
-                    break;
-                case 'gallery':
-                    content.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h2 class="text-3xl font-bold mb-4 text-blue-600">Gallery</h2>
-                            <div class="grid gap-4 md:grid-cols-3">
-                                ${galleryImages.map(img => `
-                                    <img src="${img}" alt="Fishing photo" class="w-full h-48 object-cover rounded-lg shadow">
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'editor':
-                    const password = prompt("Enter editor password:");
-                    if (password === "reeladmin123") {
-                        content.innerHTML = `
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Post Editor</h2>
-                                <form id="post-form" class="space-y-4">
-                                    <div>
-                                        <label for="title" class="block text-lg font-semibold">Post Title</label>
-                                        <input id="title" type="text" class="w-full p-2 border rounded" required>
-                                    </div>
-                                    <div>
-                                        <label for="content" class="block text-lg font-semibold">Post Content</label>
-                                        <textarea id="content" class="w-full p-2 border rounded" rows="6" required></textarea>
-                                    </div>
-                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Publish Post</button>
-                                </form>
-                            </div>
-                        `;
-                        document.getElementById('post-form').addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            const title = document.getElementById('title').value;
-                            const content = document.getElementById('content').value;
-                            const newPost = {
-                                id: posts.length + 1,
-                                title,
-                                content,
-                                date: new Date().toISOString().split('T')[0]
-                            };
-                            posts.push(newPost);
-                            localStorage.setItem('posts', JSON.stringify(posts));
-                            alert('Post published!');
-                            loadPage('posts');
-                        });
-                    } else {
-                        content.innerHTML = `
-                            <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                                <h2 class="text-3xl font-bold mb-4 text-red-600">Access Denied</h2>
-                                <p class="text-lg">Incorrect password. Please try again.</p>
-                            </div>
-                        `;
-                    }
-                    break;
-            }
-        }
-
-        // Handle browser navigation for post pages
-        window.addEventListener('hashchange', () => {
-            const hash = window.location.hash;
-            if (hash.startsWith('#post/')) {
-                const postId = parseInt(hash.split('/')[1]);
-                loadPage('post', postId);
-            } else {
-                const page = hash.replace('#', '') || 'home';
-                loadPage(page);
-            }
-        });
-
-        // Load home page or specific post page by default
-        const hash = window.location.hash;
-        if (hash.startsWith('#post/')) {
-            const postId = parseInt(hash.split('/')[1]);
-            loadPage('post', postId);
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (password === 'reeladmin123') {
+          setIsAuthenticated(true);
+          fetchPosts();
         } else {
-            loadPage(hash.replace('#', '') || 'home');
+          setMessage('Incorrect password');
         }
-    </script>
+      };
+
+      const fetchPosts = () => {
+        fetch('http://localhost:3000/api/posts')
+          .then(res => res.json())
+          .then(data => setPosts(data))
+          .catch(err => console.error(err));
+      };
+
+      const handleCreatePost = (e) => {
+        e.preventDefault();
+        fetch('http://localhost:3000/api/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, content }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            setMessage(data.message);
+            setTitle('');
+            setContent('');
+            fetchPosts();
+          })
+          .catch(err => setMessage('Error creating post'));
+      };
+
+      const handleDeletePost = (id) => {
+        fetch(`http://localhost:3000/api/posts/${id}`, { method: 'DELETE' })
+          .then(res => res.json())
+          .then(data => {
+            setMessage(data.message);
+            fetchPosts();
+          })
+          .catch(err => setMessage('Error deleting post'));
+      };
+
+      const handleStarPost = (id, starred) => {
+        fetch(`http://localhost:3000/api/posts/${id}/star`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ starred: !starred }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            setMessage(data.message);
+            fetchPosts();
+          })
+          .catch(err => setMessage('Error starring post'));
+      };
+
+      const handleSendNewsletter = (e) => {
+        e.preventDefault();
+        fetch('http://localhost:3000/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subject: newsletterSubject, content: newsletterContent }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            setMessage(data.message);
+            setNewsletterSubject('');
+            setNewsletterContent('');
+          })
+          .catch(err => setMessage('Error sending newsletter'));
+      };
+
+      if (!isAuthenticated) {
+        return (
+          <div class="container mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold text-blue-600 mb-4">Editor's Login</h1>
+            <form onSubmit={handleLogin}>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                class="border p-2 rounded w-full md:w-1/3"
+                required
+              />
+              <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Login</button>
+            </form>
+            {message && <p class="text-red-600">{message}</p>}
+          </div>
+        );
+      }
+
+      return (
+        <div class="container mx-auto px-4 py-8">
+          <h1 class="text-3xl font-bold text-blue-600 mb-4">Editor's Tab</h1>
+          <h2 class="text-2xl font-semibold mb-2">Create Post</h2>
+          <form onSubmit={handleCreatePost} class="mb-8">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Post Title"
+              class="border p-2 rounded w-full mb-2"
+              required
+            />
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Post Content"
+              class="border p-2 rounded w-full h-32"
+              required
+            ></textarea>
+            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Create Post</button>
+          </form>
+
+          <h2 class="text-2xl font-semibold mb-2">Send Newsletter</h2>
+          <form onSubmit={handleSendNewsletter} class="mb-8">
+            <input
+              type="text"
+              value={newsletterSubject}
+              onChange={(e) => setNewsletterSubject(e.target.value)}
+              placeholder="Newsletter Subject"
+              class="border p-2 rounded w-full mb-2"
+              required
+            />
+            <textarea
+              value={newsletterContent}
+              onChange={(e) => setNewsletterContent(e.target.value)}
+              placeholder="Newsletter Content"
+              class="border p-2 rounded w-full h-32"
+              required
+            ></textarea>
+            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Send Newsletter</button>
+          </form>
+
+          <h2 class="text-2xl font-semibold mb-2">Manage Posts</h2>
+          <div class="grid grid-cols-1 gap-4">
+            {posts.map(post => (
+              <div key={post._id} class="bg-white p-4 rounded-lg shadow-md flex justify-between">
+                <div>
+                  <h3 class="text-lg font-semibold">{post.title} {post.starred && <span class="text-yellow-500">★</span>}</h3>
+                  <p class="text-gray-600">{post.content.substring(0, 50)}...</p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleStarPost(post._id, post.starred)}
+                    class="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600"
+                  >
+                    {post.starred ? 'Unstar' : 'Star'}
+                  </button>
+                  <button
+                    onClick={() => handleDeletePost(post._id)}
+                    class="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {message && <p class="text-green-600 mt-4">{message}</p>}
+        </div>
+      );
+    };
+
+    // Main App Component
+    const App = () => (
+      <BrowserRouter>
+        <nav class="bg-blue-600 text-white p-4">
+          <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">FishTales</h1>
+            <div class="space-x-4">
+              <Link to="/" class="hover:underline">Home</Link>
+              <Link to="/blog" class="hover:underline">Blog</Link>
+              <Link to="/about" class="hover:underline">About</Link>
+              <Link to="/contact" class="hover:underline">Contact</Link>
+              <Link to="/editor" class="hover:underline">Editor's Tab</Link>
+            </div>
+          </div>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/editor" element={<Editor />} />
+        </Routes>
+        <footer class="bg-blue-600 text-white p-4 mt-8">
+          <div class="container mx-auto text-center">
+            <p>&copy; 2025 FishTales. All rights reserved.</p>
+          </div>
+        </footer>
+      </BrowserRouter>
+    );
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
 </body>
 </html>
