@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Reel Life - Fishing Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #1e40af;
+        }
+        .hero {
+            background-image: url('https://via.placeholder.com/1200x400?text=Fishing+Lake+Sunset');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">The Reel Life</h1>
+            <div class="space-x-4">
+                <a href="#home" class="nav-link" onclick="loadPage('home')">Home</a>
+                <a href="#posts" class="nav-link" onclick="loadPage('posts')">Posts</a>
+                <a href="#about" class="nav-link" onclick="loadPage('about')">About</a>
+                <a href="#gallery" class="nav-link" onclick="loadPage('gallery')">Gallery</a>
+                <a href="#editor" class="nav-link" onclick="loadPage('editor')">Editor</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content" class="container mx-auto p-6"></div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>© 2025 The Reel Life. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample posts data
+        let posts = JSON.parse(localStorage.getItem('posts')) || [
+            {
+                id: 1,
+                title: "My Biggest Catch Yet!",
+                content: "Last weekend, I landed a 20-pound bass at Lake Serenity. The fight was intense, and the sunset view made it unforgettable. Here's how I did it...",
+                date: "2025-05-20"
+            },
+            {
+                id: 2,
+                title: "Best Baits for Spring Fishing",
+                content: "Spring is here, and the fish are biting! My go-to baits this season include soft plastics and crankbaits. Let me share my top picks...",
+                date: "2025-05-15"
+            }
+        ];
+
+        // Sample gallery images (placeholders)
+        const galleryImages = [
+            'https://via.placeholder.com/600x400?text=Fish+1',
+            'https://via.placeholder.com/600x400?text=Fish+2',
+            'https://via.placeholder.com/600x400?text=Fish+3'
+        ];
+
+        // Page rendering
+        function loadPage(page) {
+            const content = document.getElementById('content');
+            switch(page) {
+                case 'home':
+                    content.innerHTML = `
+                        <div class="space-y-12">
+                            <!-- Hero Section -->
+                            <div class="hero">
+                                <div>
+                                    <h2 class="text-4xl font-bold mb-4">The Reel Life: Your Fishing Adventure Starts Here</h2>
+                                    <p class="text-lg">Discover epic fishing stories, expert tips, and stunning photos from the water.</p>
+                                </div>
+                            </div>
+
+                            <!-- Introduction -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Welcome to The Reel Life</h2>
+                                <p class="text-lg mb-4">Hey there, anglers! I'm thrilled to share my passion for fishing through The Reel Life. Whether you're casting in a quiet lake or battling waves in the open sea, this blog is your go-to for inspiration and practical advice. From my first catch as a kid to landing trophy fish today, I've learned a thing or two about what makes fishing so special. Join me as we explore the best spots, gear, and techniques!</p>
+                                <p class="text-lg">Scroll down to check out a featured post, some quick tips, and a way to stay updated with our newsletter.</p>
+                            </div>
+
+                            <!-- Featured Post -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Featured Post</h2>
+                                <div class="bg-gray-50 p-4 rounded-lg shadow">
+                                    <h3 class="text-xl font-semibold text-blue-600">${posts[0].title}</h3>
+                                    <p class="text-gray-500 text-sm">${posts[0].date}</p>
+                                    <p class="text-gray-600 mb-4">${posts[0].content}</p>
+                                    <a href="#posts" onclick="loadPage('posts')" class="text-blue-500 hover:underline">See All Posts</a>
+                                </div>
+                            </div>
+
+                            <!-- Fishing Tips -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Quick Fishing Tips</h2>
+                                <div class="grid gap-4 md:grid-cols-3">
+                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
+                                        <h3 class="text-lg font-semibold text-blue-600">Choose the Right Bait</h3>
+                                        <p class="text-gray-600">Match your bait to the season. In spring, try soft plastics for bass; in fall, go for live bait like worms.</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
+                                        <h3 class="text-lg font-semibold text-blue-600">Check the Weather</h3>
+                                        <p class="text-gray-600">Fish are more active before a storm. Plan your trip when the barometric pressure is dropping!</p>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
+                                        <h3 class="text-lg font-semibold text-blue-600">Early Bird Catches the Fish</h3>
+                                        <p class="text-gray-600">Dawn and dusk are prime fishing times. Get out early or stay late for the best bites.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Newsletter Signup -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Join Our Newsletter</h2>
+                                <p class="text-lg mb-4">Stay in the loop with the latest fishing stories, tips, and updates from The Reel Life!</p>
+                                <div class="flex justify-center">
+                                    <input type="email" placeholder="Enter your email" class="p-2 border rounded-l w-1/2">
+                                    <button class="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700">Subscribe</button>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">We respect your privacy and won't spam your inbox.</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'posts':
+                    content.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-3xl font-bold mb-4 text-blue-600">Blog Posts</h2>
+                            <div class="space-y-4">
+                                ${posts.map(post => `
+                                    <div class="bg-gray-50 p-4 rounded-lg shadow">
+                                        <h3 class="text-xl font-semibold text-blue-600">${post.title}</h3>
+                                        <p class="text-gray-500 text-sm">${post.date}</p>
+                                        <p class="text-gray-600">${post.content}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'about':
+                    content.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-3xl font-bold mb-4 text-blue-600">About The Reel Life</h2>
+                            <p class="text-lg mb-4">I'm an avid angler with a passion for sharing my fishing experiences. Whether it's freshwater or saltwater, I love exploring new spots and techniques. The Reel Life is my way of connecting with fellow fishing enthusiasts.</p>
+                            <p class="text-lg">Follow along for tips, gear reviews, and stories from the water!</p>
+                        </div>
+                    `;
+                    break;
+                case 'gallery':
+                    content.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-3xl font-bold mb-4 text-blue-600">Gallery</h2>
+                            <div class="grid gap-4 md:grid-cols-3">
+                                ${galleryImages.map(img => `
+                                    <img src="${img}" alt="Fishing photo" class="w-full h-48 object-cover rounded-lg shadow">
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'editor':
+                    const password = prompt("Enter editor password:");
+                    if (password === "reeladmin123") {
+                        content.innerHTML = `
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-3xl font-bold mb-4 text-blue-600">Post Editor</h2>
+                                <form id="post-form" class="space-y-4">
+                                    <div>
+                                        <label for="title" class="block text-lg font-semibold">Post Title</label>
+                                        <input id="title" type="text" class="w-full p-2 border rounded" required>
+                                    </div>
+                                    <div>
+                                        <label for="content" class="block text-lg font-semibold">Post Content</label>
+                                        <textarea id="content" class="w-full p-2 border rounded" rows="6" required></textarea>
+                                    </div>
+                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Publish Post</button>
+                                </form>
+                            </div>
+                        `;
+                        document.getElementById('post-form').addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            const title = document.getElementById('title').value;
+                            const content = document.getElementById('content').value;
+                            const newPost = {
+                                id: posts.length + 1,
+                                title,
+                                content,
+                                date: new Date().toISOString().split('T')[0]
+                            };
+                            posts.push(newPost);
+                            localStorage.setItem('posts', JSON.stringify(posts));
+                            alert('Post published!');
+                            loadPage('posts');
+                        });
+                    } else {
+                        content.innerHTML = `
+                            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                                <h2 class="text-3xl font-bold mb-4 text-red-600">Access Denied</h2>
+                                <p class="text-lg">Incorrect password. Please try again.</p>
+                            </div>
+                        `;
+                    }
+                    break;
+            }
+        }
+
+        // Load home page by default
+        loadPage('home');
+    </script>
+</body>
+</html>
