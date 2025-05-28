@@ -3,309 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FishTales - Fishing Blog</title>
+  <title>Fish Tales - Fishing Blog</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/react-router-dom@6.4.3/umd/react-router-dom.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gray-100 font-sans">
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-    const { BrowserRouter, Routes, Route, Link, useNavigate } = ReactRouterDOM;
+<body class="bg-green-50 text-gray-800">
+  <header class="bg-green-600 text-white py-6">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl font-bold text-center">Fish Tales</h1>
+      <p class="text-center mt-2">Your go-to blog for fishing adventures and tips!</p>
+      <nav class="mt-4 text-center">
+        <a href="editor.html" class="text-white hover:underline">Editor Login</a>
+      </nav>
+    </div>
+  </header>
 
-    // Home Page
-    const Home = () => (
-      <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-blue-600 mb-4">Welcome to FishTales</h1>
-        <p class="text-lg mb-4">Your go-to blog for fishing tips, stories, and gear reviews.</p>
-        <img src="https://via.placeholder.com/800x400?text=Fishing+Scene" alt="Fishing Scene" class="w-full h-64 object-cover rounded-lg mb-4" />
-        <p class="text-gray-700">Explore our blog for the latest fishing adventures!</p>
-      </div>
-    );
+  <main class="container mx-auto px-4 py-8">
+    <section id="blog-posts" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Blog posts will be dynamically inserted here -->
+    </section>
 
-    // Blog Page
-    const Blog = () => {
-      const [posts, setPosts] = useState([]);
-      useEffect(() => {
-        fetch('http://localhost:3000/api/posts')
-          .then(res => res.json())
-          .then(data => setPosts(data))
-          .catch(err => console.error(err));
-      }, []);
-      return (
-        <div class="container mx-auto px-4 py-8">
-          <h1 class="text-3xl font-bold text-blue-600 mb-4">Blog Posts</h1>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {posts.map(post => (
-              <div key={post._id} class="bg-white p-4 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold">{post.title} {post.starred && <span class="text-yellow-500">★</span>}</h2>
-                <p class="text-gray-600">{post.content.substring(0, 100)}...</p>
-                <Link to={`/blog/${post._id}`} class="text-blue-500 hover:underline">Read More</Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    };
+    <section class="mt-12 bg-green-100 p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-green-800">Subscribe to Our Newsletter</h2>
+      <p class="mt-2 text-gray-600">Stay updated with the latest fishing tips and stories!</p>
+      <form id="newsletter-form" class="mt-4">
+        <input type="email" id="email-input" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your email" required>
+        <button type="submit" class="mt-2 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Subscribe</button>
+      </form>
+      <p id="newsletter-message" class="mt-2 text-green-600 hidden">Thank you for subscribing!</p>
+    </section>
+  </main>
 
-    // About Page
-    const About = () => (
-      <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-blue-600 mb-4">About FishTales</h1>
-        <p class="text-gray-700">FishTales is dedicated to fishing enthusiasts, sharing tips, tricks, and tales from the water.</p>
-      </div>
-    );
+  <footer class="bg-green-600 text-white py-4 mt-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 Fish Tales. All rights reserved.</p>
+    </div>
+  </footer>
 
-    // Contact Page with Subscription Form
-    const Contact = () => {
-      const [email, setEmail] = useState('');
-      const [message, setMessage] = useState('');
-      const handleSubscribe = (e) => {
-        e.preventDefault();
-        fetch('http://localhost:3000/api/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            setMessage(data.message);
-            setEmail('');
-          })
-          .catch(err => setMessage('Error subscribing. Try again.'));
-      };
-      return (
-        <div class="container mx-auto px-4 py-8">
-          <h1 class="text-3xl font-bold text-blue-600 mb-4">Contact & Subscribe</h1>
-          <p class="text-gray-700 mb-4">Join our newsletter for the latest fishing updates!</p>
-          <form onSubmit={handleSubscribe} class="mb-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              class="border p-2 rounded w-full md:w-1/3"
-              required
-            />
-            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Subscribe</button>
-          </form>
-          {message && <p class="text-green-600">{message}</p>}
-        </div>
-      );
-    };
-
-    // Editor's Tab
-    const Editor = () => {
-      const [password, setPassword] = useState('');
-      const [isAuthenticated, setIsAuthenticated] = useState(false);
-      const [title, setTitle] = useState('');
-      const [content, setContent] = useState('');
-      const [posts, setPosts] = useState([]);
-      const [newsletterSubject, setNewsletterSubject] = useState('');
-      const [newsletterContent, setNewsletterContent] = useState('');
-      const [message, setMessage] = useState('');
-
-      const handleLogin = (e) => {
-        e.preventDefault();
-        if (password === 'reeladmin123') {
-          setIsAuthenticated(true);
-          fetchPosts();
-        } else {
-          setMessage('Incorrect password');
-        }
-      };
-
-      const fetchPosts = () => {
-        fetch('http://localhost:3000/api/posts')
-          .then(res => res.json())
-          .then(data => setPosts(data))
-          .catch(err => console.error(err));
-      };
-
-      const handleCreatePost = (e) => {
-        e.preventDefault();
-        fetch('http://localhost:3000/api/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            setMessage(data.message);
-            setTitle('');
-            setContent('');
-            fetchPosts();
-          })
-          .catch(err => setMessage('Error creating post'));
-      };
-
-      const handleDeletePost = (id) => {
-        fetch(`http://localhost:3000/api/posts/${id}`, { method: 'DELETE' })
-          .then(res => res.json())
-          .then(data => {
-            setMessage(data.message);
-            fetchPosts();
-          })
-          .catch(err => setMessage('Error deleting post'));
-      };
-
-      const handleStarPost = (id, starred) => {
-        fetch(`http://localhost:3000/api/posts/${id}/star`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ starred: !starred }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            setMessage(data.message);
-            fetchPosts();
-          })
-          .catch(err => setMessage('Error starring post'));
-      };
-
-      const handleSendNewsletter = (e) => {
-        e.preventDefault();
-        fetch('http://localhost:3000/api/newsletter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subject: newsletterSubject, content: newsletterContent }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            setMessage(data.message);
-            setNewsletterSubject('');
-            setNewsletterContent('');
-          })
-          .catch(err => setMessage('Error sending newsletter'));
-      };
-
-      if (!isAuthenticated) {
-        return (
-          <div class="container mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold text-blue-600 mb-4">Editor's Login</h1>
-            <form onSubmit={handleLogin}>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                class="border p-2 rounded w-full md:w-1/3"
-                required
-              />
-              <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Login</button>
-            </form>
-            {message && <p class="text-red-600">{message}</p>}
-          </div>
-        );
-      }
-
-      return (
-        <div class="container mx-auto px-4 py-8">
-          <h1 class="text-3xl font-bold text-blue-600 mb-4">Editor's Tab</h1>
-          <h2 class="text-2xl font-semibold mb-2">Create Post</h2>
-          <form onSubmit={handleCreatePost} class="mb-8">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Post Title"
-              class="border p-2 rounded w-full mb-2"
-              required
-            />
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Post Content"
-              class="border p-2 rounded w-full h-32"
-              required
-            ></textarea>
-            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Create Post</button>
-          </form>
-
-          <h2 class="text-2xl font-semibold mb-2">Send Newsletter</h2>
-          <form onSubmit={handleSendNewsletter} class="mb-8">
-            <input
-              type="text"
-              value={newsletterSubject}
-              onChange={(e) => setNewsletterSubject(e.target.value)}
-              placeholder="Newsletter Subject"
-              class="border p-2 rounded w-full mb-2"
-              required
-            />
-            <textarea
-              value={newsletterContent}
-              onChange={(e) => setNewsletterContent(e.target.value)}
-              placeholder="Newsletter Content"
-              class="border p-2 rounded w-full h-32"
-              required
-            ></textarea>
-            <button type="submit" class="bg-blue-600 text-white p-2 rounded mt-2 hover:bg-blue-700">Send Newsletter</button>
-          </form>
-
-          <h2 class="text-2xl font-semibold mb-2">Manage Posts</h2>
-          <div class="grid grid-cols-1 gap-4">
-            {posts.map(post => (
-              <div key={post._id} class="bg-white p-4 rounded-lg shadow-md flex justify-between">
-                <div>
-                  <h3 class="text-lg font-semibold">{post.title} {post.starred && <span class="text-yellow-500">★</span>}</h3>
-                  <p class="text-gray-600">{post.content.substring(0, 50)}...</p>
-                </div>
-                <div>
-                  <button
-                    onClick={() => handleStarPost(post._id, post.starred)}
-                    class="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600"
-                  >
-                    {post.starred ? 'Unstar' : 'Star'}
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(post._id)}
-                    class="bg-red-500 text-white p-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          {message && <p class="text-green-600 mt-4">{message}</p>}
-        </div>
-      );
-    };
-
-    // Main App Component
-    const App = () => (
-      <BrowserRouter>
-        <nav class="bg-blue-600 text-white p-4">
-          <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">FishTales</h1>
-            <div class="space-x-4">
-              <Link to="/" class="hover:underline">Home</Link>
-              <Link to="/blog" class="hover:underline">Blog</Link>
-              <Link to="/about" class="hover:underline">About</Link>
-              <Link to="/contact" class="hover:underline">Contact</Link>
-              <Link to="/editor" class="hover:underline">Editor's Tab</Link>
-            </div>
-          </div>
-        </nav>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/editor" element={<Editor />} />
-        </Routes>
-        <footer class="bg-blue-600 text-white p-4 mt-8">
-          <div class="container mx-auto text-center">
-            <p>&copy; 2025 FishTales. All rights reserved.</p>
-          </div>
-        </footer>
-      </BrowserRouter>
-    );
-
-    ReactDOM.render(<App />, document.getElementById('root'));
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
