@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fish Tales - Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-green-50 text-gray-800">
+  <header class="bg-green-600 text-white py-6">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold text-center">Fish Tales - Editor</h1>
+      <a href="index.html" class="text-white hover:underline mt-2 inline-block">Back to Home</a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <section id="password-section" class="bg-green-100 p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-green-800">Editor Login</h2>
+      <form id="password-form" class="mt-4">
+        <input type="password" id="password-input" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter password" required>
+        <button type="submit" class="mt-2 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Login</button>
+      </form>
+      <p id="password-error" class="mt-2 text-red-600 hidden">Incorrect password!</p>
+    </section>
+
+    <section id="editor-section" class="hidden mt-8">
+      <h2 class="text-2xl font-semibold text-green-800">Create New Post</h2>
+      <form id="post-form" class="mt-4 bg-green-100 p-6 rounded-lg shadow-md">
+        <input type="text" id="post-title" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Post Title" required>
+        <textarea id="post-content" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" rows="6" placeholder="Post Content" required></textarea>
+        <input type="text" id="post-author" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Author Name" required>
+        <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Publish Post</button>
+      </form>
+
+      <h2 class="text-2xl font-semibold text-green-800 mt-8">Manage Posts</h2>
+      <ul id="post-list" class="mt-4 space-y-4">
+        <!-- Posts will be dynamically inserted here -->
+      </ul>
+    </section>
+  </main>
+
+  <footer class="bg-green-600 text-white py-4 mt-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 Fish Tales. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
