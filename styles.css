@@ -22,6 +22,22 @@ body {
   @apply text-sm text-gray-500 italic mt-2;
 }
 
+.starred-post-card {
+  @apply bg-green-100 p-8 rounded-lg shadow-lg border-2 border-green-500;
+}
+
+.starred-post-card h3 {
+  @apply text-2xl font-bold text-green-800;
+}
+
+.starred-post-card p {
+  @apply text-gray-700 mt-3;
+}
+
+.starred-post-card .author {
+  @apply text-sm text-gray-600 italic mt-3;
+}
+
 .delete-btn {
   @apply bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600;
 }
