@@ -3,40 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fish Tales - Fishing Blog</title>
+  <title>Fish Tales - Editor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-green-50 text-gray-800">
   <header class="bg-green-600 text-white py-6">
     <div class="container mx-auto px-4">
-      <h1 class="text-4xl font-bold text-center">Fish Tales</h1>
-      <p class="text-center mt-2">Your go-to blog for fishing adventures and tips!</p>
-      <nav class="mt-4 text-center">
-        <a href="editor.html" class="text-white hover:underline">Editor Login</a>
-      </nav>
+      <h1 class="text-3xl font-bold text-center">Fish Tales - Editor</h1>
+      <a href="index.html" class="text-white hover:underline mt-2 inline-block">Back to Home</a>
     </div>
   </header>
 
   <main class="container mx-auto px-4 py-8">
-    <section id="blog-posts" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Blog posts will be dynamically inserted here -->
+    <section id="password-section" class="bg-green-100 p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-green-800">Editor Login</h2>
+      <form id="password-form" class="mt-4">
+        <input type="password" id="password-input" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter password" required>
+        <button type="submit" class="mt-2 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Login</button>
+      </form>
+      <p id="password-error" class="mt-2 text-red-600 hidden">Incorrect password!</p>
     </section>
 
-    <section class="mt-12 bg-green-100 p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-semibold text-green-800">Subscribe to Our Newsletter</h2>
-      <p class="mt-2 text-gray-600">Stay updated with the latest fishing tips and stories!</p>
-      <form id="newsletter-form" class="mt-4">
-        <input type="email" id="email-input" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your email" required>
-        <button type="submit" class="mt-2 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Subscribe</button>
+    <section id="editor-section" class="hidden mt-8">
+      <h2 class="text-2xl font-semibold text-green-800">Create New Post</h2>
+      <form id="post-form" class="mt-4 bg-green-100 p-6 rounded-lg shadow-md">
+        <input type="text" id="post-title" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Post Title" required>
+        <textarea id="post-content" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" rows="6" placeholder="Post Content" required></textarea>
+        <input type="text" id="post-author" class="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Author Name" required>
+        <label class="flex items-center mb-4">
+          <input type="checkbox" id="post-starred" class="mr-2">
+          <span class="text-gray-700">Mark as Starred (Featured)</span>
+        </label>
+        <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Publish Post</button>
       </form>
-      <p id="newsletter-message" class="mt-2 text-green-600 hidden">Thank you for subscribing!</p>
+
+      <h2 class="text-2xl font-semibold text-green-800 mt-8">Manage Posts</h2>
+      <ul id="post-list" class="mt-4 space-y-4">
+        <!-- Posts will be dynamically inserted here -->
+      </ul>
     </section>
   </main>
 
   <footer class="bg-green-600 text-white py-4 mt-8">
     <div class="container mx-auto px-4 text-center">
-      <p>&copy; 2025 Fish Tales. All rights reserved.</p>
+      <p>© 2025 Fish Tales. All rights reserved.</p>
     </div>
   </footer>
 
