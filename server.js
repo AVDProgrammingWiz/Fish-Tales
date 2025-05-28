@@ -32,8 +32,8 @@ const Subscriber = mongoose.model('Subscriber', subscriberSchema);
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'your-email@gmail.com', // Replace with your Gmail address
-    pass: 'your-app-password', // Replace with your Gmail App Password
+    user: 'adruzynski.15@lism.catholic.edu.au', // Replace with your Gmail address
+    pass: '85084', // Replace with your Gmail App Password
   },
 });
 
@@ -102,7 +102,7 @@ app.post('/api/newsletter', async (req, res) => {
     const emails = subscribers.map(sub => sub.email);
 
     const mailOptions = {
-      from: 'your-email@gmail.com', // Replace with your Gmail address
+      from: 'adruzynski.15@lism.catholic.edu.au', // Replace with your Gmail address
       to: emails,
       subject,
       text: content,
