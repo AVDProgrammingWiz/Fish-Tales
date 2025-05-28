@@ -1,79 +1,118 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Store subscribers (in-memory for simplicity; use a database in production)
-let subscribers = [];
+// MongoDB Connection
+mongoose.connect('mongodb://localhost/fishtales', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-// Nodemailer transporter configuration for Gmail SMTP
+// Blog Post Schema
+const postSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+  starred: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+});
+const Post = mongoose.model('Post', postSchema);
+
+// Subscriber Schema
+const subscriberSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+});
+const Subscriber = mongoose.model('Subscriber', subscriberSchema);
+
+// Gmail SMTP Setup
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
-    }
+  service: 'gmail',
+  auth: {
+    user: 'your-email@gmail.com', // Replace with your Gmail address
+    pass: 'your-app-password', // Replace with your Gmail App Password
+  },
 });
 
-// Subscribe endpoint
-app.post('/api/subscribe', (req, res) => {
+// API Routes
+// Get all posts
+app.get('/api/posts', async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching posts' });
+  }
+});
+
+// Create post
+app.post('/api/posts', async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const post = new Post({ title, content });
+    await post.save();
+    res.json({ message: 'Post created successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating post' });
+  }
+});
+
+// Delete post
+app.delete('/api/posts/:id', async (req, res) => {
+  try {
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Post deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting post' });
+  }
+});
+
+// Star/unstar post
+app.patch('/api/posts/:id/star', async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    post.starred = req.body.starred;
+    await post.save();
+    res.json({ message: 'Post updated successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating post' });
+  }
+});
+
+// Subscribe
+app.post('/api/subscribe', async (req, res) => {
+  try {
     const { email } = req.body;
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.status(400).json({ message: 'Invalid email address' });
-    }
-    if (subscribers.includes(email)) {
-        return res.status(400).json({ message: 'Email already subscribed' });
-    }
-    subscribers.push(email);
-    res.status(200).json({ message: 'Subscribed successfully' });
+    const subscriber = new Subscriber({ email });
+    await subscriber.save();
+    res.json({ message: 'Subscribed successfully' });
+  } catch (err) {
+    res.status(400).json({ message: 'Error subscribing, email may already exist' });
+  }
 });
 
-// Send newsletter endpoint
-app.post('/api/send-newsletter', (req, res) => {
+// Send newsletter
+app.post('/api/newsletter', async (req, res) => {
+  try {
     const { subject, content } = req.body;
-    if (!subject || !content) {
-        return res.status(400).json({ message: 'Subject and content are required' });
-    }
+    const subscribers = await Subscriber.find();
+    const emails = subscribers.map(sub => sub.email);
 
     const mailOptions = {
-        from: `"The Reel Life" <${process.env.GMAIL_USER}>`,
-        subject: subject,
-        html: content // Send as HTML
+      from: 'your-email@gmail.com', // Replace with your Gmail address
+      to: emails,
+      subject,
+      text: content,
     };
 
-    // Send email to all subscribers
-    const sendPromises = subscribers.map(email => {
-        return transporter.sendMail({ ...mailOptions, to: email })
-            .catch(err => ({ email, error: err.message }));
-    });
-
-    Promise.all(sendPromises)
-        .then(results => {
-            const errors = results.filter(result => result && result.error);
-            if (errors.length > 0) {
-                res.status(500).json({ message: 'Some emails failed to send', errors });
-            } else {
-                res.status(200).json({ message: `Newsletter sent to ${subscribers.length} subscribers` });
-            }
-        })
-        .catch(err => {
-            res.status(500).json({ message: 'Failed to send newsletter', error: err.message });
-        });
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'Newsletter sent successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error sending newsletter' });
+  }
 });
 
-// Get subscribers (for admin viewing)
-app.get('/api/subscribers', (req, res) => {
-    res.status(200).json({ subscribers });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(3000, () => console.log('Server running on port 3000'));
