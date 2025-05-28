@@ -8,13 +8,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Home page logic
   if (document.getElementById('blog-posts')) {
     const blogPosts = document.getElementById('blog-posts');
+    const starredPostsContainer = document.getElementById('starred-posts-container');
     const newsletterForm = document.getElementById('newsletter-form');
     const newsletterMessage = document.getElementById('newsletter-message');
 
-    // Load and display posts
+    // Render starred posts
+    const renderStarredPosts = () => {
+      const posts = getPosts().filter(post => post.starred);
+      starredPostsContainer.innerHTML = '';
+      if (posts.length === 0) {
+        starredPostsContainer.innerHTML = '<p class="text-gray-600">No featured posts yet.</p>';
+        return;
+      }
+      posts.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.className = 'starred-post-card';
+        postElement.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>${post.content.substring(0, 150)}...</p>
+          <p class="author">By ${post.author} on ${post.date}</p>
+        `;
+        starredPostsContainer.appendChild(postElement);
+      });
+    };
+
+    // Render regular posts
     const renderPosts = () => {
       const posts = getPosts();
-      blogPosts.innerHTML = '';
+      blogPosts.innerHTML = '<h2 class="text-2xl font-semibold text-green-800 mb-4 col-span-full">All Posts</h2>';
       posts.forEach(post => {
         const postElement = document.createElement('div');
         postElement.className = 'post-card';
@@ -41,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    renderStarredPosts();
     renderPosts();
   }
 
@@ -75,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.className = 'bg-white p-4 rounded-md shadow-md flex justify-between items-center';
         li.innerHTML = `
-          <span>${post.title} by ${post.author}</span>
+          <span>${post.title} by ${post.author}${post.starred ? ' (Starred)' : ''}</span>
           <button class="delete-btn" data-index="${index}">Delete</button>
         `;
         postList.appendChild(li);
@@ -99,10 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const title = document.getElementById('post-title').value;
       const content = document.getElementById('post-content').value;
       const author = document.getElementById('post-author').value;
+      const starred = document.getElementById('post-starred').checked;
       const date = new Date().toLocaleDateString();
 
       const posts = getPosts();
-      posts.push({ title, content, author, date });
+      posts.push({ title, content, author, date, starred });
       savePosts(posts);
       postForm.reset();
       renderPostList();
